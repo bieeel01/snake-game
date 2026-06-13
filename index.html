@@ -82,6 +82,14 @@
             color: var(--secondary);
         }
 
+        /* Menu Hambúrguer (Mobile) */
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
         /* --- BOTÕES --- */
         .btn {
             display: inline-block;
@@ -91,6 +99,7 @@
             text-decoration: none;
             transition: all 0.3s ease;
             cursor: pointer;
+            border: none;
         }
 
         .btn-primary {
@@ -325,6 +334,39 @@
             font-size: 1.1rem;
         }
 
+        /* --- BOTÃO VOLTAR AO TOPO --- */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--secondary);
+            color: #000;
+            width: 45px;
+            height: 45px;
+            border-radius: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 229, 255, 0.4);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 999;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            background: var(--primary);
+            box-shadow: 0 5px 15px var(--primary-glow);
+        }
+
         /* --- FOOTER --- */
         footer {
             background: #060911;
@@ -380,10 +422,32 @@
             }
         }
 
-        @media (max-width: 576px) {
-            .nav-menu {
-                display: none; /* Simplificação para Mobile */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block; /* Ativa botão hambúrguer */
             }
+
+            .nav-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(11, 15, 25, 0.95);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                text-align: center;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                display: none; /* Escondido por padrão */
+            }
+
+            .nav-menu.active {
+                display: flex; /* Exibe ao clicar */
+            }
+        }
+
+        @media (max-width: 576px) {
             .hero-content h1 {
                 font-size: 2.2rem;
             }
@@ -402,12 +466,16 @@
         <a href="#" class="logo">
             <i class="fa-solid fa-gamepad"></i> SNAKE.IO
         </a>
+        <div class="menu-toggle" id="mobile-menu">
+            <i class="fa-solid fa-bars"></i>
+        </div>
         <nav>
-            <ul class="nav-menu">
+            <ul class="nav-menu" id="nav-list">
                 <li><a href="#inicio">Início</a></li>
                 <li><a href="#sobre">Sobre</a></li>
                 <li><a href="#recursos">Recursos</a></li>
                 <li><a href="#galeria">Galeria</a></li>
+                <li><a href="#jogar">Jogar</a></li>
             </ul>
         </nav>
     </header>
@@ -416,10 +484,10 @@
         <div class="hero-content">
             <h1>O clássico está de volta. <span>Reimaginado.</span></h1>
             <p>Reviva a nostalgia do jogo da cobrinha original com uma roupagem moderna, jogabilidade fluida e desafios eletrizantes em alta definição.</p>
-            <a href="01 Jogo cobrinha v2.html" class="btn btn-primary">Jogar Agora</a>
+            <a href="#jogar" class="btn btn-primary">Jogar Agora</a>
         </div>
         <div class="hero-image">
-            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600" alt="Interface moderna do jogo Snake">
+            <img src="images/hero.jpg" alt="Interface moderna do jogo Snake">
         </div>
     </section>
 
@@ -429,7 +497,7 @@
             <div class="about-text">
                 <h3>Uma Lenda dos Arcades</h3>
                 <p>Nascido nos anos 70 e imortalizado nos celulares indestrutíveis do fim dos anos 90, o Snake Game (ou Jogo da Cobrinha) desafiou gerações com sua mecânica incrivelmente simples e viciante.</p>
-                <p>O objetivo continua puro, mas a adrenalina foi renovada para os dias de hoje.</p>
+                <p>O objetivo continua puro, mas a adrenaline foi renovada para os dias de hoje.</p>
                 
                 <h3 style="margin-top: 2rem;">Regras Básicas</h3>
                 <ul class="rules-list">
@@ -471,13 +539,13 @@
         <h2 class="section-title">Galeria do <span>Universo Snake</span></h2>
         <div class="gallery-grid">
             <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=600" alt="Gameplay estilo retro cyberpunk">
+                <img src="images/gameplay.jpg" alt="Gameplay estilo retro cyberpunk">
                 <div class="gallery-desc">
                     <h4>Gameplay Intenso</h4>
                 </div>
             </div>
             <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&q=80&w=600" alt="Conceito abstrato de dados e neon">
+                <img src="images/concept.jpg" alt="Conceito abstrato de dados e neon">
                 <div class="gallery-desc">
                     <h4>Arte Conceitual Neon</h4>
                 </div>
@@ -487,17 +555,20 @@
 
     <section class="cta-section" id="jogar">
         <div class="cta-box" style="max-width: 650px; padding: 2rem 1rem;">
-            <h2 style="margin-bottom: 1.5rem; font-family: var(--font-retro); font-size: 1.8rem;">Snake Verse</h2>
+            <h2 style="margin-bottom: 1rem; font-family: var(--font-retro); font-size: 1.8rem;">Snake Verse</h2>
+            <p style="margin-bottom: 1.5rem;">Pronto para o desafio? Teste suas habilidades agora mesmo!</p>
             
             <div style="position: relative; width: 510px; height: 600px; max-width: 100%; margin: 0 auto; border: 2px solid var(--primary); border-radius: 12px; overflow: hidden; box-shadow: 0 0 25px var(--primary-glow);">
-                
                 <iframe src="jogo.html" style="width: 100%; height: 100%; border: none; scrolling: no; overflow: hidden;"></iframe>
-            
             </div>
             
             <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">Clique dentro do quadro do jogo para começar a jogar!</p>
         </div>
     </section>
+
+    <div class="back-to-top" id="backToTopBtn">
+        <i class="fa-solid fa-arrow-up"></i>
+    </div>
 
     <footer>
         <div class="footer-content">
@@ -509,5 +580,39 @@
         </div>
     </footer>
 
+    <script>
+        // 1. Funcionalidade: Menu Responsivo (Hambúrguer)
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navList = document.getElementById('nav-list');
+
+        mobileMenu.addEventListener('click', () => {
+            navList.classList.toggle('active');
+        });
+
+        // Fecha o menu ao clicar em qualquer link (melhor usabilidade)
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navList.classList.remove('active');
+            });
+        });
+
+        // 2. Funcionalidade: Botão "Voltar ao topo" com scroll dinâming
+        const backToTopBtn = document.getElementById('backToTopBtn');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
 </body>
 </html>
