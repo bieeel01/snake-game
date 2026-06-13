@@ -1,710 +1,507 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Verse - O Clássico Jogo da Cobrinha</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- RESET & VARIÁVEIS --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
 
-<title>Snake Game</title>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(20, 30, 55, 0.6);
+            --primary: #00ff66;
+            --primary-glow: rgba(0, 255, 102, 0.4);
+            --secondary: #00e5ff;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --font-main: 'Inter', sans-serif;
+            --font-retro: 'Press Start 2P', cursive;
+        }
 
-<link
-rel="icon"
-type="image/svg+xml"
-href='data:image/svg+xml,
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<rect width="64" height="64" rx="12" fill="%23111827"/>
-<path d="M18 18
-C18 10 28 10 28 18
-L28 28
-C28 36 38 36 38 28
-L38 18
-C38 10 48 10 48 18
-L48 46"
-fill="none"
-stroke="%2322c55e"
-stroke-width="8"
-stroke-linecap="round"/>
-<circle cx="48" cy="50" r="7" fill="%2322c55e"/>
-<circle cx="46" cy="48" r="1.5" fill="white"/>
-<circle cx="50" cy="48" r="1.5" fill="white"/>
-<path d="M54 52 L60 50 L54 48"
-stroke="%23ef4444"
-stroke-width="2"
-fill="none"
-stroke-linecap="round"/>
-</svg>'>
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
 
-<style>
+        /* --- HEADER --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-retro);
+            font-size: 0.9rem;
+            color: var(--primary);
+            text-decoration: none;
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
 
-body{
-    background:#111827;
-    font-family:Arial,Helvetica,sans-serif;
-    min-height:100vh;
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
+        .nav-menu a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
 
-    color:white;
-}
+        .nav-menu a:hover {
+            color: var(--secondary);
+        }
 
-.container{
-    text-align:center;
-}
+        /* --- BOTÕES --- */
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
 
-h1{
-    color:#22c55e;
-    margin-bottom:15px;
-}
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #00d455);
+            color: #000;
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
 
-.info{
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 255, 102, 0.6);
+        }
 
-    display:flex;
-    justify-content:space-between;
+        /* --- HERO SECTION --- */
+        .hero {
+            padding: 10rem 10% 6rem 10%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4rem;
+            min-height: 90vh;
+        }
 
-    margin-bottom:10px;
+        .hero-content {
+            flex: 1;
+        }
 
-    font-size:18px;
-    font-weight:bold;
-}
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(120deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-canvas{
+        .hero-content h1 span {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-    background:#1f2937;
+        .hero-content p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+        }
 
-    border:3px solid #22c55e;
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
 
-    border-radius:12px;
+        .hero-image img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 50px rgba(0, 229, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    box-shadow:
-    0 0 25px rgba(34,197,94,.35);
+        /* --- SEÇÃO SOBRE --- */
+        .about {
+            padding: 6rem 10%;
+            background: rgba(255, 255, 255, 0.02);
+        }
 
-}
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            font-weight: 800;
+        }
 
-.tip{
+        .section-title span {
+            color: var(--secondary);
+        }
 
-    margin-top:12px;
+        .about-container {
+            display: flex;
+            gap: 4rem;
+            align-items: center;
+        }
 
-    opacity:.75;
+        .about-text {
+            flex: 1;
+        }
 
-    font-size:14px;
-}
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
 
-.overlay{
+        .about-text p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
 
-    position:fixed;
+        .rules-list {
+            list-style: none;
+        }
 
-    inset:0;
+        .rules-list li {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    background:
-    rgba(0,0,0,.85);
+        .rules-list i {
+            color: var(--primary);
+        }
 
-    display:flex;
+        /* --- RECURSOS --- */
+        .features {
+            padding: 6rem 10%;
+        }
 
-    flex-direction:column;
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
 
-    align-items:center;
-    justify-content:center;
+        .feature-card {
+            background: var(--card-bg);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
 
-    gap:15px;
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 255, 102, 0.1);
+        }
 
-    z-index:100;
-}
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
 
-.hidden{
-    display:none;
-}
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
 
-button{
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
 
-    border:none;
+        /* --- GALERIA --- */
+        .gallery {
+            padding: 6rem 10%;
+            background: rgba(255, 255, 255, 0.02);
+        }
 
-    background:#22c55e;
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
 
-    color:white;
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 300px;
+        }
 
-    padding:12px 26px;
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
 
-    border-radius:8px;
+        .gallery-item:hover img {
+            transform: scale(1.08);
+        }
 
-    cursor:pointer;
+        .gallery-desc {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+        }
 
-    font-size:16px;
+        .gallery-desc h4 {
+            font-size: 1.2rem;
+            color: #fff;
+        }
 
-    font-weight:bold;
+        /* --- CHAMADA FINAL --- */
+        .cta-section {
+            padding: 8rem 10%;
+            text-align: center;
+            position: relative;
+        }
 
-    transition:.2s;
-}
+        .cta-box {
+            background: linear-gradient(135deg, rgba(20, 30, 55, 0.8), rgba(11, 15, 25, 0.8));
+            padding: 4rem 2rem;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 255, 102, 0.2);
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
 
-button:hover{
+        .cta-box h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
 
-    background:#16a34a;
+        .cta-box p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
 
-    transform:scale(1.05);
+        /* --- FOOTER --- */
+        footer {
+            background: #060911;
+            padding: 3rem 10%;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
 
-}
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+        }
 
-button:active{
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
 
-    transform:scale(.98);
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
 
-}
+        /* --- RESPONSIVIDADE (MEDIA QUERIES) --- */
+        @media (max-width: 968px) {
+            header {
+                padding: 1.5rem 5%;
+            }
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 8rem 5% 4rem 5%;
+                gap: 3rem;
+            }
+            .hero-content p {
+                margin: 0 auto 2.5rem auto;
+            }
+            .about-container {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            .about, .features, .gallery, .cta-section {
+                padding: 4rem 5%;
+            }
+            .hero-content h1 {
+                font-size: 2.8rem;
+            }
+        }
 
-</style>
-
+        @media (max-width: 576px) {
+            .nav-menu {
+                display: none; /* Simplificação para Mobile */
+            }
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
-
-<h1>🐍 Snake Game</h1>
-
-<div class="info">
-
-<div>
-Pontos:
-<span id="score">0</span>
-</div>
-
-<div>
-Recorde:
-<span id="best">0</span>
-</div>
-
-</div>
-
-<canvas
-id="game"
-width="500"
-height="500">
-</canvas>
-
-<div class="tip">
-Use ← ↑ ↓ → para mover
-</div>
-
-</div>
-
-<div
-id="menu"
-class="overlay">
-
-<h1>🐍 Snake Game</h1>
-
-<p>
-Coma a comida e evite bater.
-</p>
-
-<button onclick="startGame()">
-Iniciar
-</button>
-
-</div>
-
-<div
-id="gameOver"
-class="overlay hidden">
-
-<h1>
-💀 Game Over
-</h1>
-
-<p>
-
-Pontuação:
-<span id="finalScore"></span>
-
-</p>
-
-<button onclick="restart()">
-Jogar novamente
-</button>
-
-</div>
-
-<script>
-
-const canvas =
-document.getElementById("game");
-
-const ctx =
-canvas.getContext("2d");
-
-const grid = 25;
-
-const tile =
-canvas.width / grid;
-
-let snake;
-
-let food;
-
-let dx;
-
-let dy;
-
-let score;
-
-let running=false;
-
-let gameLoop;
-
-const scoreEl =
-document.getElementById("score");
-
-const bestEl =
-document.getElementById("best");
-
-let best =
-localStorage.getItem(
-"snake-best"
-)||0;
-
-bestEl.textContent=best;
-
-function init(){
-
-snake=[
-
-{x:10,y:10}
-
-];
-
-dx=1;
-
-dy=0;
-
-score=0;
-
-scoreEl.textContent=0;
-
-spawnFood();
-
-}
-
-function spawnFood(){
-
-while(true){
-
-food={
-
-x:Math.floor(
-Math.random()*grid
-),
-
-y:Math.floor(
-Math.random()*grid
-)
-
-};
-
-const hit=
-
-snake.some(
-
-part=>
-
-part.x===food.x &&
-
-part.y===food.y
-
-);
-
-if(!hit){
-
-return;
-
-}
-
-}
-
-}
-
-function drawTile(
-
-x,
-y,
-color
-
-){
-
-ctx.fillStyle=color;
-
-ctx.fillRect(
-
-x*tile+1,
-
-y*tile+1,
-
-tile-2,
-
-tile-2
-
-);
-
-}
-
-function drawFood(){
-
-ctx.fillStyle="#ef4444";
-
-ctx.beginPath();
-
-ctx.arc(
-
-food.x*tile+
-tile/2,
-
-food.y*tile+
-tile/2,
-
-tile/3,
-
-0,
-
-Math.PI*2
-
-);
-
-ctx.fill();
-
-}
-
-function draw(){
-
-ctx.fillStyle=
-"#1f2937";
-
-ctx.fillRect(
-
-0,
-0,
-
-canvas.width,
-
-canvas.height
-
-);
-
-drawFood();
-
-snake.forEach(
-
-(part,index)=>{
-
-drawTile(
-
-part.x,
-
-part.y,
-
-index===0
-
-? "#22c55e"
-
-: "#4ade80"
-
-);
-
-}
-
-);
-
-}
-
-function update(){
-
-const head={
-
-x:
-snake[0].x+dx,
-
-y:
-snake[0].y+dy
-
-};
-
-if(
-
-head.x<0 ||
-
-head.y<0 ||
-
-head.x>=grid ||
-
-head.y>=grid
-
-){
-
-endGame();
-
-return;
-
-}
-
-for(
-
-const part of snake
-
-){
-
-if(
-
-head.x===part.x &&
-
-head.y===part.y
-
-){
-
-endGame();
-
-return;
-
-}
-
-}
-
-snake.unshift(head);
-
-if(
-
-head.x===food.x &&
-
-head.y===food.y
-
-){
-
-score++;
-
-scoreEl.textContent=
-
-score;
-
-if(score>best){
-
-best=score;
-
-localStorage.setItem(
-
-"snake-best",
-
-best
-
-);
-
-bestEl.textContent=
-
-best;
-
-}
-
-spawnFood();
-
-}else{
-
-snake.pop();
-
-}
-
-}
-
-function tick(){
-
-if(!running){
-
-return;
-
-}
-
-update();
-
-draw();
-
-}
-
-function startGame(){
-
-document
-
-.getElementById(
-"menu"
-)
-
-.classList
-
-.add("hidden");
-
-init();
-
-running=true;
-
-draw();
-
-clearInterval(
-
-gameLoop
-
-);
-
-gameLoop=
-
-setInterval(
-
-tick,
-
-110
-
-);
-
-}
-
-function restart(){
-
-document
-
-.getElementById(
-"gameOver"
-)
-
-.classList
-
-.add("hidden");
-
-startGame();
-
-}
-
-function endGame(){
-
-running=false;
-
-clearInterval(
-
-gameLoop
-
-);
-
-document
-
-.getElementById(
-"finalScore"
-)
-
-.textContent=
-
-score;
-
-document
-
-.getElementById(
-"gameOver"
-)
-
-.classList
-
-.remove(
-"hidden"
-);
-
-}
-
-document
-
-.addEventListener(
-
-"keydown",
-
-e=>{
-
-if(
-
-!running
-
-){
-
-return;
-
-}
-
-if(
-
-e.key===
-
-"ArrowUp"
-
-&& dy!==1
-
-){
-
-dx=0;
-
-dy=-1;
-
-}
-
-else if(
-
-e.key===
-
-"ArrowDown"
-
-&& dy!==-1
-
-){
-
-dx=0;
-
-dy=1;
-
-}
-
-else if(
-
-e.key===
-
-"ArrowLeft"
-
-&& dx!==1
-
-){
-
-dx=-1;
-
-dy=0;
-
-}
-
-else if(
-
-e.key===
-
-"ArrowRight"
-
-&& dx!==-1
-
-){
-
-dx=1;
-
-dy=0;
-
-}
-
-}
-
-);
-
-draw();
-
-</script>
+    <header>
+        <a href="#" class="logo">
+            <i class="fa-solid fa-gamepad"></i> SNAKE.IO
+        </a>
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#recursos">Recursos</a></li>
+                <li><a href="#galeria">Galeria</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <h1>O clássico está de volta. <span>Reimaginado.</span></h1>
+            <p>Reviva a nostalgia do jogo da cobrinha original com uma roupagem moderna, jogabilidade fluida e desafios eletrizantes em alta definição.</p>
+            <a href="#jogar" class="btn btn-primary">Jogar Agora</a>
+        </div>
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600" alt="Interface moderna do jogo Snake">
+        </div>
+    </section>
+
+    <section class="about" id="sobre">
+        <h2 class="section-title">Sobre o <span>Jogo</span></h2>
+        <div class="about-container">
+            <div class="about-text">
+                <h3>Uma Lenda dos Arcades</h3>
+                <p>Nascido nos anos 70 e imortalizado nos celulares indestrutíveis do fim dos anos 90, o Snake Game (ou Jogo da Cobrinha) desafiou gerações com sua mecânica incrivelmente simples e viciante.</p>
+                <p>O objetivo continua puro, mas a adrenalina foi renovada para os dias de hoje.</p>
+                
+                <h3 style="margin-top: 2rem;">Regras Básicas</h3>
+                <ul class="rules-list">
+                    <li><i class="fa-solid fa-circle-chevron-right"></i> Colete os blocos de energia (comida) para crescer e pontuar.</li>
+                    <li><i class="fa-solid fa-circle-chevron-right"></i> Use as setas ou W,A,S,D para mudar a direção do movimento.</li>
+                    <li><i class="fa-solid fa-circle-chevron-right"></i> O jogo acaba instantaneamente se você colidir com as paredes ou com o próprio corpo.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="recursos">
+        <h2 class="section-title">Nossos <span>Recursos</span></h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fa-solid fa-sliders"></i>
+                <h3>Controle Simples</h3>
+                <p>Comandos responsivos e precisos, otimizados tanto para teclados quanto para telas sensíveis ao toque.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fa-solid fa-trophy"></i>
+                <h3>Sistema de Pontos</h3>
+                <p>Acompanhe seu progresso em tempo real com multiplicadores por velocidade e recordes históricos salvos.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fa-solid fa-gauge-high"></i>
+                <h3>Dificuldade Progressiva</h3>
+                <p>Quanto mais você come, mais rápido o jogo fica. Um teste real para os seus reflexos!</p>
+            </div>
+            <div class="feature-card">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <h3>Estilo Retrô-Futurista</h3>
+                <p>Glow neon vibrante casado com a geometria clássica pixelada que todo mundo ama.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery" id="galeria">
+        <h2 class="section-title">Galeria do <span>Universo Snake</span></h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=600" alt="Gameplay estilo retro cyberpunk">
+                <div class="gallery-desc">
+                    <h4>Gameplay Intenso</h4>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&q=80&w=600" alt="Conceito abstrato de dados e neon">
+                <div class="gallery-desc">
+                    <h4>Arte Conceitual Neon</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="jogar">
+        <div class="cta-box">
+            <h2>Pronto para bater seu recorde?</h2>
+            <p>Pegue os comandos, concentre-se e veja quão grande você consegue ficar sem morder a própria cauda!</p>
+            <a href="#" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 3rem;">Iniciar Partida</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <p>Desenvolvido por: <strong>Gabriel Melo</strong></p>
+            <div class="footer-links">
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i></a>
+            </div>
+            <p>Junho, 2026</p>
+        </div>
+    </footer>
 
 </body>
-
 </html>
